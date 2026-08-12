@@ -271,7 +271,7 @@ bool Config::apply_config() {
             I_BIT = getConfigValue<uint32_t>(cfg_data_, "I_BIT");
             SPLIT = getConfigValue<std::vector<uint32_t>>(cfg_data_, "SPLIT");
 
-            if ((W_BIT <= 0) || (I_BIT <= 0)) {
+            if ((W_BIT <= 0) || (I_BIT <= 0) || SPLIT.empty()) {
                 std::cerr << "Error in config parameters." << std::endl;
                 std::exit(EXIT_FAILURE);
             }
@@ -292,6 +292,16 @@ bool Config::apply_config() {
             SPLIT = std::vector<uint32_t>{0};
         }
 
+        // Needs the mapping and the split, so it cannot run earlier.
+        const XbarFactors f = factors();
+        if ((M < f.col) || (N < f.row)) {
+            std::cerr << "Crossbar too small for " << m_mode_to_string(m_mode)
+                      << ". One weight needs " << f.col << " column(s) and "
+                      << f.row << " row(s), but M=" << M << " and N=" << N
+                      << "." << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
         verbose = getConfigValue<bool>(cfg_data_, "verbose");
 
         return true;
@@ -299,6 +309,14 @@ bool Config::apply_config() {
         std::cerr << "Error applying configuration: " << e.what() << std::endl;
         return false;
     }
+}
+
+XbarFactors Config::factors() const {
+    return mapping_properties(m_mode).xbar_factors(SPLIT.size());
+}
+
+XbarCapacity Config::capacity() const {
+    return mapping_properties(m_mode).xbar_capacity(SPLIT.size(), M, N);
 }
 
 bool Config::is_int_mapping(const MappingMode &mode) {
