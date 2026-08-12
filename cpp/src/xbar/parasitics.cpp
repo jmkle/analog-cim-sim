@@ -8,31 +8,44 @@
 
 #include <algorithm>
 #include <execution>
-#include <stdexcept>
 
 #include "helper/config.h"
 #include "helper/definitions.h"
-#include "mapping/mapping_registry.h"
+#include "mapping/mapping_properties.h"
 #include "xbar/parasitics.h"
 
 namespace nq {
 ParasiticSolver::ParasiticSolver(const float wire_resistance,
-                                 const float V_read) :
+                                 const float V_read,
+                                 const MappingProperties &prop) :
     m_xbar_(CFG.M),
     n_xbar_(CFG.N),
     w_res_(wire_resistance),
-    v_read_(V_read),
-    m_mode_(CFG.m_mode) {
+    v_read_(V_read) {
 
-    // Set encoding function pointers for different mapping modes. Throws error
-    // if mapping mode is unsupported.
-    if (mm_to_wenc.find(m_mode_) != mm_to_wenc.end()) {
-        weight_enc_func_ = mm_to_wenc.at(m_mode_);
-        input_enc_func_ = mm_to_ienc.at(m_mode_);
-        output_enc_func_ = mm_to_oenc.at(m_mode_);
+    // Weight encoding follows from the cell multipliers.
+    if (prop.col_mult == 2 && prop.row_mult == 2) {
+        weight_enc_func_ = &ParasiticSolver::w_enc_quad;
+    } else if (prop.col_mult == 2) {
+        weight_enc_func_ = &ParasiticSolver::w_enc_double_col;
+    } else if (prop.row_mult == 2) {
+        weight_enc_func_ = &ParasiticSolver::w_enc_double_row;
     } else {
-        throw std::logic_error(
-            "Unsupported mapping mode: " + m_mode_to_string(m_mode_) + "!");
+        weight_enc_func_ = &ParasiticSolver::w_enc_single;
+    }
+
+    // Input encoding follows from the row multipliers.
+    if (prop.row_mult == 2) {
+        input_enc_func_ = &ParasiticSolver::i_enc_double;
+    } else {
+        input_enc_func_ = &ParasiticSolver::i_enc_single;
+    }
+
+    // Output encoding is a mapper property.
+    if (prop.out_enc == OutputEnc::DIFF_COL) {
+        output_enc_func_ = &ParasiticSolver::o_enc_double;
+    } else {
+        output_enc_func_ = &ParasiticSolver::o_enc_single;
     }
 }
 

@@ -44,8 +44,8 @@ Mapper::Mapper(const MappingProperties &props, bool is_diff_weight_mapping) :
         }
 
         if (CFG.parasitics) {
-            par_solver_ =
-                std::make_shared<ParasiticSolver>(CFG.w_res, CFG.V_read);
+            par_solver_ = std::make_shared<ParasiticSolver>(CFG.w_res,
+                                                            CFG.V_read, props_);
         }
     }
 
