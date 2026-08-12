@@ -26,7 +26,30 @@ Crossbar::Crossbar() :
     }
 }
 
-void Crossbar::write(const int32_t *mat, int32_t m_matrix, int32_t n_matrix) {
+bool Crossbar::fits(int32_t m_matrix, int32_t n_matrix) const {
+    const XbarCapacity cap = CFG.capacity();
+    if ((m_matrix <= static_cast<int32_t>(cap.m)) &&
+        (n_matrix <= static_cast<int32_t>(cap.n))) {
+        return true;
+    }
+
+    const XbarFactors f = CFG.factors();
+    std::cerr << "Error: A " << m_matrix << "x" << n_matrix
+              << " matrix does not fit the crossbar. "
+              << m_mode_to_string(CFG.m_mode) << " needs " << f.col
+              << " column(s) and " << f.row << " row(s) per weight, so it maps "
+              << "to " << m_matrix * f.col << "x" << n_matrix * f.row
+              << " cells on a " << CFG.M << "x" << CFG.N
+              << " crossbar. At most " << cap.m << "x" << cap.n << " fits."
+              << std::endl;
+    return false;
+}
+
+int32_t Crossbar::write(const int32_t *mat, int32_t m_matrix,
+                        int32_t n_matrix) {
+    if (!fits(m_matrix, n_matrix)) {
+        return -1;
+    }
     write_xbar_counter_++;
     consecutive_mvm_counter_ = 0;
     if (CFG.read_disturb) {
@@ -72,10 +95,14 @@ void Crossbar::write(const int32_t *mat, int32_t m_matrix, int32_t n_matrix) {
     if (!CFG.digital_only) {
         mapper_->a_write(m_matrix, n_matrix);
     }
+    return 0;
 }
 
-void Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
-                   int32_t m_matrix, int32_t n_matrix, const char *l_name) {
+int32_t Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
+                      int32_t m_matrix, int32_t n_matrix, const char *l_name) {
+    if (!fits(m_matrix, n_matrix)) {
+        return -1;
+    }
     mvm_counter_++;
     consecutive_mvm_counter_++;
     if (CFG.digital_only) {
@@ -184,6 +211,7 @@ void Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
             }
         }
     }
+    return 0;
 }
 
 Crossbar::~Crossbar() {
