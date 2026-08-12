@@ -56,6 +56,10 @@ class Crossbar {
                                        // (without a write in between)
     uint64_t refresh_xbar_counter_;    // Number of complete crossbar refreshes
     uint64_t refresh_cell_counter_;    // Number of single-cell refreshes
+
+    // Save what the report needs from the config before it gets replaced.
+    XbarFactors factors_;
+    uint64_t bits_per_input_;
 };
 
 } // namespace nq

@@ -20,7 +20,9 @@ Crossbar::Crossbar() :
     rd_model_(nullptr),
     consecutive_mvm_counter_(0),
     refresh_xbar_counter_(0),
-    refresh_cell_counter_(0) {
+    refresh_cell_counter_(0),
+    factors_(CFG.factors()),
+    bits_per_input_(mapper_->properties().bit_serial ? CFG.I_BIT : 1) {
     if (CFG.read_disturb) {
         rd_model_ = std::make_shared<ReadDisturb>(CFG.V_read);
     }
@@ -216,58 +218,21 @@ int32_t Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
 
 Crossbar::~Crossbar() {
     if (CFG.verbose) {
-        std::cout << "MappingMode: " << m_mode_to_string(CFG.m_mode)
-                  << std::endl;
+        const MappingProperties &prop = mapper_->properties();
+
+        std::cout << "MappingMode: " << prop.name << std::endl;
         std::cout << "write_xbar_counter_: " << write_xbar_counter_
                   << std::endl;
         std::cout << "mvm_counter_: " << mvm_counter_ << std::endl;
 
-        uint64_t num_write = 0;
-        uint64_t num_mvm_total = 0;
-        uint64_t num_mvm_sequential = 0;
-        uint32_t cells_per_value = CFG.SPLIT.size();
-
-        switch (CFG.m_mode) {
-        case MappingMode::I_DIFF_W_DIFF_1XB:
-            num_write = write_xbar_counter_;
-            num_mvm_total = mvm_counter_ * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * 2 * CFG.I_BIT;
-            cells_per_value *= 2;
-            break;
-        case MappingMode::I_DIFF_W_DIFF_2XB:
-            num_write = write_xbar_counter_ * 2;
-            num_mvm_total = mvm_counter_ * 2 * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * CFG.I_BIT;
-            cells_per_value *= 4;
-            break;
-        case MappingMode::I_OFFS_W_DIFF:
-            num_write = write_xbar_counter_;
-            num_mvm_total = mvm_counter_ * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * CFG.I_BIT;
-            cells_per_value *= 2;
-            break;
-        case MappingMode::I_TC_W_DIFF:
-            num_write = write_xbar_counter_;
-            num_mvm_total = mvm_counter_ * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * CFG.I_BIT;
-            cells_per_value *= 2;
-            break;
-        case MappingMode::I_UINT_W_DIFF:
-            num_write = write_xbar_counter_;
-            num_mvm_total = mvm_counter_ * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * CFG.I_BIT;
-            cells_per_value *= 2;
-            break;
-        case MappingMode::I_UINT_W_OFFS:
-            num_write = write_xbar_counter_;
-            num_mvm_total = mvm_counter_ * CFG.I_BIT;
-            num_mvm_sequential = mvm_counter_ * CFG.I_BIT;
-            cells_per_value *= 1;
-            break;
-        default:
-            std::cerr << "Unknown mode encountered!" << std::endl;
-            std::exit(EXIT_FAILURE);
-        }
+        const uint64_t num_write = write_xbar_counter_ * prop.xbars;
+        const uint64_t num_mvm_total =
+            mvm_counter_ * prop.xbars * bits_per_input_;
+        const uint64_t num_mvm_sequential =
+            mvm_counter_ * prop.cycles * bits_per_input_;
+        // Counted over every crossbar the mapping drives.
+        const uint32_t cells_per_value =
+            factors_.col * factors_.row * prop.xbars;
 
         std::cout << "num_write: " << num_write << std::endl;
         std::cout << "num_mvm_total: " << num_mvm_total << std::endl;

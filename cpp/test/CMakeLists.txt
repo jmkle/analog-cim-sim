@@ -81,6 +81,7 @@ add_library_test(var_tests lib/var_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/con
 add_library_test(adc_tests lib/adc_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/configs)
 add_library_test(parasitics_tests lib/parasitics_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/configs)
 add_library_test(size_check_tests lib/size_check_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/configs)
+add_library_test(accounting_tests lib/accounting_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/configs)
 
 # Core tests
 add_core_test(config_tests lib/config_tests.cpp ${CMAKE_CURRENT_SOURCE_DIR}/lib/configs)
