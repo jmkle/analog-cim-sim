@@ -319,6 +319,11 @@ XbarCapacity Config::capacity() const {
     return mapping_properties(m_mode).xbar_capacity(SPLIT.size(), M, N);
 }
 
+uint32_t Config::state_columns() const {
+    return capacity().m *
+           mapping_properties(m_mode).split_columns_per_weight(SPLIT.size());
+}
+
 bool Config::is_int_mapping(const MappingMode &mode) {
     return mapping_properties(mode).type == MappingType::INT;
 }

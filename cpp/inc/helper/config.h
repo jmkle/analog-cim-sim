@@ -64,6 +64,9 @@ class Config {
     /** Largest logical matrix that fits on the configured crossbar. */
     XbarCapacity capacity() const;
 
+    /** Number of columns for the state matrices of the crossbar. */
+    uint32_t state_columns() const;
+
     // Physical crossbar dimensions: M columns (bitlines) by N rows (wordlines).
     // A weight costs several cells, so use capacity() for the usable size.
     uint32_t M;

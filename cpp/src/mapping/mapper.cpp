@@ -19,14 +19,16 @@ namespace nq {
 Mapper::Mapper(const MappingProperties &props, bool is_diff_weight_mapping) :
     props_(props),
     is_diff_weight_mapping_(is_diff_weight_mapping),
-    gd_p_(CFG.M * CFG.SPLIT.size(), std::vector<int32_t>(CFG.N, 0)),
-    gd_m_(CFG.M * CFG.SPLIT.size(), std::vector<int32_t>(CFG.N, 0)),
+    gd_p_(CFG.state_columns(), std::vector<int32_t>(CFG.capacity().n, 0)),
+    gd_m_(CFG.state_columns(), std::vector<int32_t>(CFG.capacity().n, 0)),
     shift_(CFG.SPLIT.size(), 0),
-    sum_w_(CFG.M, 0),
-    ia_p_(CFG.M * CFG.SPLIT.size(), std::vector<float>(CFG.N, CFG.HRS)),
-    ia_m_(CFG.M * CFG.SPLIT.size(), std::vector<float>(CFG.N, CFG.HRS)),
-    ia_p_orig_(CFG.M * CFG.SPLIT.size(), std::vector<float>(CFG.N, CFG.HRS)),
-    ia_m_orig_(CFG.M * CFG.SPLIT.size(), std::vector<float>(CFG.N, CFG.HRS)),
+    sum_w_(CFG.capacity().m, 0),
+    ia_p_(CFG.state_columns(), std::vector<float>(CFG.capacity().n, CFG.HRS)),
+    ia_m_(CFG.state_columns(), std::vector<float>(CFG.capacity().n, CFG.HRS)),
+    ia_p_orig_(CFG.state_columns(),
+               std::vector<float>(CFG.capacity().n, CFG.HRS)),
+    ia_m_orig_(CFG.state_columns(),
+               std::vector<float>(CFG.capacity().n, CFG.HRS)),
     i_step_size_(CFG.SPLIT.size(), 0.0),
     adc_(ADCFactory::createADC(CFG.adc_type)) {
 

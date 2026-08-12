@@ -63,11 +63,11 @@ void ParasiticSolver::set_conductance_matrix(
     // values.
     auto div_v_read = [this](std::vector<std::vector<float>> &ia,
                              std::vector<std::vector<float>> &ga) -> void {
-        ga.assign(this->m_xbar_ * CFG.SPLIT.size(),
-                  std::vector<float>(this->n_xbar_, CFG.HRS));
+        ga.assign(ia.size(),
+                  std::vector<float>(ia.empty() ? 0 : ia[0].size(), CFG.HRS));
 
-        for (size_t m = 0; m < m_xbar_; m++) {
-            for (size_t n = 0; n < n_xbar_; n++) {
+        for (size_t m = 0; m < ia.size(); m++) {
+            for (size_t n = 0; n < ia[m].size(); n++) {
                 ga[m][n] = ia[m][n] / -(this->v_read_);
             }
         }
@@ -149,7 +149,6 @@ void ParasiticSolver::w_enc_single(
     // Use only positive conductance matrix and encode each conductance in a
     // cell. Convert to row-wise vectors for more efficient indexing in the
     // solver.
-    // TODO: Maybe add an assertion here to check XBar size.
     ga.assign(n_xbar_, std::vector<float>(m_matrix, 0));
     for (size_t m = 0; m < m_matrix; m++) {
         auto ga_col = ga_p[m];
@@ -167,7 +166,6 @@ void ParasiticSolver::w_enc_double_col(
     // matrices and store into conductance matrix. Additionally, conductance
     // matrix is stored as row-wise vectors instead of column-wise vectors for
     // more efficient indexing in the solver.
-    // TODO: Maybe add an assertion here to check XBar size.
     ga.assign(n_xbar_, std::vector<float>(m_matrix * 2, 0));
     for (size_t m = 0; m < m_matrix; m++) {
         auto ga_p_col = ga_p[m];
@@ -184,8 +182,6 @@ void ParasiticSolver::w_enc_double_row(
     std::optional<std::vector<std::vector<float>>> &ga_m,
     std::vector<std::vector<float>> &ga, int32_t m_matrix, int32_t n_matrix) {
     // Interleave similar to double column but across rows.
-    // XBar is assumed to have enough rows to accomodate this.
-    // TODO: Maybe add an assertion here to check XBar size.
     ga.assign(n_xbar_, std::vector<float>(m_matrix, 0));
     for (size_t m = 0; m < m_matrix; m++) {
         auto ga_p_col = ga_p[m];
@@ -203,8 +199,6 @@ void ParasiticSolver::w_enc_quad(
     std::vector<std::vector<float>> &ga, int32_t m_matrix, int32_t n_matrix) {
 
     // Pair of conductances are diagonally mirrored on 4 neighbouring cells.
-    // XBar is assumed to have enough rows/cols to accomodate this.
-    // TODO: Maybe add an assertion here to check XBar size.
     ga.assign(n_xbar_, std::vector<float>(m_matrix * 2, 0));
     for (size_t m = 0; m < m_matrix; m++) {
         auto ga_p_col = ga_p[m];

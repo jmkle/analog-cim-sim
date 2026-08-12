@@ -31,9 +31,9 @@ void Crossbar::write(const int32_t *mat, int32_t m_matrix, int32_t n_matrix) {
     consecutive_mvm_counter_ = 0;
     if (CFG.read_disturb) {
         std::vector<std::vector<bool>> update_p(
-            CFG.M * CFG.SPLIT.size(), std::vector<bool>(CFG.N, false));
+            CFG.state_columns(), std::vector<bool>(CFG.capacity().n, false));
         std::vector<std::vector<bool>> update_m(
-            CFG.M * CFG.SPLIT.size(), std::vector<bool>(CFG.N, false));
+            CFG.state_columns(), std::vector<bool>(CFG.capacity().n, false));
 
         // Copy gd_p and gd_m before changing them
         const std::vector<std::vector<int32_t>> prev_gd_p = mapper_->get_gd_p();
@@ -119,11 +119,11 @@ void Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
                         // all LRS cells are reprogrammed by resetting and
                         // setting again
                         std::vector<std::vector<bool>> update_p(
-                            CFG.M * CFG.SPLIT.size(),
-                            std::vector<bool>(CFG.N, false));
+                            CFG.state_columns(),
+                            std::vector<bool>(CFG.capacity().n, false));
                         std::vector<std::vector<bool>> update_m(
-                            CFG.M * CFG.SPLIT.size(),
-                            std::vector<bool>(CFG.N, false));
+                            CFG.state_columns(),
+                            std::vector<bool>(CFG.capacity().n, false));
 
                         // Get the current gd_p and gd_m
                         const std::vector<std::vector<int32_t>> &curr_gd_p =
@@ -153,7 +153,7 @@ void Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
                         consecutive_mvm_counter_ = 0;
 
                         // Reset conductance values
-                        mapper_->a_write(CFG.M, CFG.N);
+                        mapper_->a_write(CFG.capacity().m, CFG.capacity().n);
                     }
                 }
                 break;
