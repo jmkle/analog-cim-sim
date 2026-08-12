@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2025 Rebecca Pelke, Arunkumar Vaidyanathan                   *
+ * Copyright (C) 2025 Rebecca Pelke, Arunkumar Vaidyanathan, Joel Klein       *
  * All Rights Reserved                                                        *
  *                                                                            *
  * This work is licensed under the terms described in the LICENSE file        *
@@ -7,22 +7,8 @@
  ******************************************************************************/
 #include "mapping/mapper.h"
 #include "helper/config.h"
-#include "mapping/bnn_mapper/bnn_i.h"
-#include "mapping/bnn_mapper/bnn_ii.h"
-#include "mapping/bnn_mapper/bnn_iii.h"
-#include "mapping/bnn_mapper/bnn_iv.h"
-#include "mapping/bnn_mapper/bnn_v.h"
-#include "mapping/bnn_mapper/bnn_vi.h"
-#include "mapping/int_mapper/int_i.h"
-#include "mapping/int_mapper/int_ii.h"
-#include "mapping/int_mapper/int_iii.h"
-#include "mapping/int_mapper/int_iv.h"
-#include "mapping/int_mapper/int_v.h"
-#include "mapping/tnn_mapper/tnn_i.h"
-#include "mapping/tnn_mapper/tnn_ii.h"
-#include "mapping/tnn_mapper/tnn_iii.h"
-#include "mapping/tnn_mapper/tnn_iv.h"
-#include "mapping/tnn_mapper/tnn_v.h"
+#include "mapping/mapping_properties.h"
+#include "mapping/mapping_registry.h"
 
 #include <algorithm>
 #include <execution>
@@ -30,7 +16,8 @@
 
 namespace nq {
 
-Mapper::Mapper(bool is_diff_weight_mapping) :
+Mapper::Mapper(const MappingProperties &props, bool is_diff_weight_mapping) :
+    props_(props),
     is_diff_weight_mapping_(is_diff_weight_mapping),
     gd_p_(CFG.M * CFG.SPLIT.size(), std::vector<int32_t>(CFG.N, 0)),
     gd_m_(CFG.M * CFG.SPLIT.size(), std::vector<int32_t>(CFG.N, 0)),
@@ -77,45 +64,7 @@ Mapper::Mapper(bool is_diff_weight_mapping) :
 }
 
 std::unique_ptr<Mapper> Mapper::create_from_config() {
-    switch (CFG.m_mode) {
-    case MappingMode::I_DIFF_W_DIFF_1XB:
-        return std::make_unique<MapperIntI>();
-    case MappingMode::I_DIFF_W_DIFF_2XB:
-        return std::make_unique<MapperIntI>();
-    case MappingMode::I_OFFS_W_DIFF:
-        return std::make_unique<MapperIntII>();
-    case MappingMode::I_TC_W_DIFF:
-        return std::make_unique<MapperIntIII>();
-    case MappingMode::I_UINT_W_DIFF:
-        return std::make_unique<MapperIntIV>();
-    case MappingMode::I_UINT_W_OFFS:
-        return std::make_unique<MapperIntV>();
-    case MappingMode::BNN_I:
-        return std::make_unique<MapperBnnI>();
-    case MappingMode::BNN_II:
-        return std::make_unique<MapperBnnII>();
-    case MappingMode::BNN_III:
-        return std::make_unique<MapperBnnIII>();
-    case MappingMode::BNN_IV:
-        return std::make_unique<MapperBnnIV>();
-    case MappingMode::BNN_V:
-        return std::make_unique<MapperBnnV>();
-    case MappingMode::BNN_VI:
-        return std::make_unique<MapperBnnVI>();
-    case MappingMode::TNN_I:
-        return std::make_unique<MapperTnnI>();
-    case MappingMode::TNN_II:
-        return std::make_unique<MapperTnnII>();
-    case MappingMode::TNN_III:
-        return std::make_unique<MapperTnnIII>();
-    case MappingMode::TNN_IV:
-        return std::make_unique<MapperTnnIV>();
-    case MappingMode::TNN_V:
-        return std::make_unique<MapperTnnV>();
-    default:
-        std::cerr << "Mapper not implemented.";
-        abort();
-    }
+    return create_mapper(CFG.m_mode);
 }
 
 void Mapper::d_write_diff(const int32_t *mat, int32_t m_matrix,
@@ -464,6 +413,8 @@ int Mapper::rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model) {
     }
     return refresh_count;
 }
+
+const MappingProperties &Mapper::properties() const { return props_; }
 
 bool Mapper::is_diff_weight_mapping() const { return is_diff_weight_mapping_; }
 

@@ -12,6 +12,7 @@
 
 #include "helper/config.h"
 #include "helper/definitions.h"
+#include "mapping/mapping_registry.h"
 #include "xbar/parasitics.h"
 
 namespace nq {

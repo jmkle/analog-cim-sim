@@ -17,6 +17,19 @@ namespace nq {
 // Mapping: I_TC_W_DIFF
 class MapperIntIII : public Mapper {
   public:
+    // How this mapping places one weight on the crossbar and what it costs.
+    static constexpr MappingProperties PROPERTIES = {
+        /* mode */ MappingMode::I_TC_W_DIFF,
+        /* name */ "I_TC_W_DIFF",
+        /* type */ MappingType::INT,
+        /* col_mult */ 2,
+        /* row_mult */ 1,
+        /* split_in_cols */ true,
+        /* out_enc */ OutputEnc::DIFF_COL,
+        /* xbars */ 1,
+        /* cycles */ 1,
+        /* bit_serial */ true};
+
     MapperIntIII();
     MapperIntIII(const MapperIntIII &) = delete;
     virtual ~MapperIntIII();

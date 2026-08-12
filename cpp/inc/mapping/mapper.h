@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2025 Rebecca Pelke, Arunkumar Vaidyanathan                   *
+ * Copyright (C) 2025 Rebecca Pelke, Arunkumar Vaidyanathan, Joel Klein       *
  * All Rights Reserved                                                        *
  *                                                                            *
  * This work is licensed under the terms described in the LICENSE file        *
@@ -13,6 +13,7 @@
 #include <random>
 #include <vector>
 
+#include "mapping/mapping_properties.h"
 #include "xbar/adc.h"
 #include "xbar/parasitics.h"
 #include "xbar/read_disturb.h"
@@ -21,7 +22,9 @@ namespace nq {
 
 class Mapper {
   public:
-    Mapper(bool is_diff_weight_mapping);
+    // Properties are passed from the derived class to the base class
+    // constructor, so that the base class can use them in its constructor.
+    Mapper(const MappingProperties &props, bool is_diff_weight_mapping);
     Mapper(const Mapper &) = delete;
     virtual ~Mapper() = default;
 
@@ -48,6 +51,7 @@ class Mapper {
                                    const uint64_t read_num,
                                    const uint64_t write_num);
     int rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model);
+    const MappingProperties &properties() const;
     bool is_diff_weight_mapping() const;
 
     void a_add_c2c_var(int32_t m_matrix, int32_t n_matrix);
@@ -67,6 +71,8 @@ class Mapper {
     void a_write_p(int32_t m_matrix, int32_t n_matrix);
     void a_write_p_bnn(int32_t m_matrix, int32_t n_matrix);
 
+    // How the configured mapping places a weight and what it costs
+    const MappingProperties &props_;
     bool is_diff_weight_mapping_;
 
     // Helper functions

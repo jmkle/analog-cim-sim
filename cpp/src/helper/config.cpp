@@ -6,6 +6,7 @@
  * found in the root directory of this source tree.                           *
  ******************************************************************************/
 #include "helper/config.h"
+#include "mapping/mapping_registry.h"
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -66,44 +67,12 @@ bool Config::apply_config() {
 
         std::string m_mode_name =
             getConfigValue<std::string>(cfg_data_, "m_mode");
-        if (m_mode_name == "I_DIFF_W_DIFF_1XB") {
-            m_mode = MappingMode::I_DIFF_W_DIFF_1XB;
-        } else if (m_mode_name == "I_DIFF_W_DIFF_2XB") {
-            m_mode = MappingMode::I_DIFF_W_DIFF_2XB;
-        } else if (m_mode_name == "I_OFFS_W_DIFF") {
-            m_mode = MappingMode::I_OFFS_W_DIFF;
-        } else if (m_mode_name == "I_TC_W_DIFF") {
-            m_mode = MappingMode::I_TC_W_DIFF;
-        } else if (m_mode_name == "I_UINT_W_DIFF") {
-            m_mode = MappingMode::I_UINT_W_DIFF;
-        } else if (m_mode_name == "I_UINT_W_OFFS") {
-            m_mode = MappingMode::I_UINT_W_OFFS;
-        } else if (m_mode_name == "BNN_I") {
-            m_mode = MappingMode::BNN_I;
-        } else if (m_mode_name == "BNN_II") {
-            m_mode = MappingMode::BNN_II;
-        } else if (m_mode_name == "BNN_III") {
-            m_mode = MappingMode::BNN_III;
-        } else if (m_mode_name == "BNN_IV") {
-            m_mode = MappingMode::BNN_IV;
-        } else if (m_mode_name == "BNN_V") {
-            m_mode = MappingMode::BNN_V;
-        } else if (m_mode_name == "BNN_VI") {
-            m_mode = MappingMode::BNN_VI;
-        } else if (m_mode_name == "TNN_I") {
-            m_mode = MappingMode::TNN_I;
-        } else if (m_mode_name == "TNN_II") {
-            m_mode = MappingMode::TNN_II;
-        } else if (m_mode_name == "TNN_III") {
-            m_mode = MappingMode::TNN_III;
-        } else if (m_mode_name == "TNN_IV") {
-            m_mode = MappingMode::TNN_IV;
-        } else if (m_mode_name == "TNN_V") {
-            m_mode = MappingMode::TNN_V;
-        } else {
+        std::optional<MappingMode> mode = mode_from_name(m_mode_name);
+        if (!mode) {
             std::cerr << "Unkown MappingMode." << std::endl;
             std::exit(EXIT_FAILURE);
         }
+        m_mode = *mode;
 
         digital_only = getConfigValue<bool>(cfg_data_, "digital_only");
         if (!digital_only) {
@@ -333,15 +302,15 @@ bool Config::apply_config() {
 }
 
 bool Config::is_int_mapping(const MappingMode &mode) {
-    return mode_to_type.at(mode) == MappingType::INT;
+    return mapping_properties(mode).type == MappingType::INT;
 }
 
 bool Config::is_bnn_mapping(const MappingMode &mode) {
-    return mode_to_type.at(mode) == MappingType::BNN;
+    return mapping_properties(mode).type == MappingType::BNN;
 }
 
 bool Config::is_tnn_mapping(const MappingMode &mode) {
-    return mode_to_type.at(mode) == MappingType::TNN;
+    return mapping_properties(mode).type == MappingType::TNN;
 }
 
 bool Config::update_cfg(const char *json_string, bool *recreate_xbar,

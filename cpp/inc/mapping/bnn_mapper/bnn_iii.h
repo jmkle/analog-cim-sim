@@ -17,6 +17,19 @@ namespace nq {
 // Mapping BNN III: i_NN = v_D+ - v_D-, w_NN = 2 g_D - 1
 class MapperBnnIII : public Mapper {
   public:
+    // How this mapping places one weight on the crossbar and what it costs.
+    static constexpr MappingProperties PROPERTIES = {
+        /* mode */ MappingMode::BNN_III,
+        /* name */ "BNN_III",
+        /* type */ MappingType::BNN,
+        /* col_mult */ 1,
+        /* row_mult */ 1,
+        /* split_in_cols */ false,
+        /* out_enc */ OutputEnc::SINGLE,
+        /* xbars */ 1,
+        /* cycles */ 2,
+        /* bit_serial */ false};
+
     MapperBnnIII();
     MapperBnnIII(const MapperBnnIII &) = delete;
     virtual ~MapperBnnIII();

@@ -17,6 +17,19 @@ namespace nq {
 // Mapping TNN III: i_NN + 1= (v_D^1, v_D^0), w_NN = g_D+ - g_D-
 class MapperTnnIII : public Mapper {
   public:
+    // How this mapping places one weight on the crossbar and what it costs.
+    static constexpr MappingProperties PROPERTIES = {
+        /* mode */ MappingMode::TNN_III,
+        /* name */ "TNN_III",
+        /* type */ MappingType::TNN,
+        /* col_mult */ 2,
+        /* row_mult */ 1,
+        /* split_in_cols */ false,
+        /* out_enc */ OutputEnc::DIFF_COL,
+        /* xbars */ 1,
+        /* cycles */ 2,
+        /* bit_serial */ false};
+
     MapperTnnIII();
     MapperTnnIII(const MapperTnnIII &) = delete;
     virtual ~MapperTnnIII();

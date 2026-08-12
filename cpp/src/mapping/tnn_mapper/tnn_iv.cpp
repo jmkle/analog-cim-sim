@@ -19,7 +19,7 @@ MapperTnnIV::MapperTnnIV() :
     tmp_out_lsb_(CFG.M, 0.0),
     tmp_out_msb_(CFG.M, 0.0),
     tmp_out_fp_(CFG.M, 0.0),
-    Mapper(false) {}
+    Mapper(PROPERTIES, false) {}
 
 MapperTnnIV::~MapperTnnIV() {}
 

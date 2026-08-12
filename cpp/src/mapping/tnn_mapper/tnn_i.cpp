@@ -16,7 +16,7 @@ MapperTnnI::MapperTnnI() :
     vd_p_(CFG.N, 0),
     vd_m_(CFG.N, 0),
     tmp_out_(CFG.M, 0.0),
-    Mapper(true) {}
+    Mapper(PROPERTIES, true) {}
 
 MapperTnnI::~MapperTnnI() {}
 

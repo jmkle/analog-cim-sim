@@ -7,6 +7,7 @@
  ******************************************************************************/
 #include "xbar/crossbar.h"
 #include "helper/config.h"
+#include "mapping/mapping_registry.h"
 
 #include <iostream>
 

@@ -17,6 +17,19 @@ namespace nq {
 // Mapping: I_UINT_W_OFFS
 class MapperIntV : public Mapper {
   public:
+    // How this mapping places one weight on the crossbar and what it costs.
+    static constexpr MappingProperties PROPERTIES = {
+        /* mode */ MappingMode::I_UINT_W_OFFS,
+        /* name */ "I_UINT_W_OFFS",
+        /* type */ MappingType::INT,
+        /* col_mult */ 1,
+        /* row_mult */ 1,
+        /* split_in_cols */ true,
+        /* out_enc */ OutputEnc::SINGLE,
+        /* xbars */ 1,
+        /* cycles */ 1,
+        /* bit_serial */ true};
+
     MapperIntV();
     MapperIntV(const MapperIntV &) = delete;
     virtual ~MapperIntV();
