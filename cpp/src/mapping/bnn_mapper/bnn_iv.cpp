@@ -18,7 +18,7 @@ MapperBnnIV::MapperBnnIV() :
     tmp_out_(CFG.capacity().m, 0.0),
     tmp_out_p_(CFG.capacity().m, 0.0),
     tmp_out_m_(CFG.capacity().m, 0.0),
-    Mapper(PROPERTIES, false) {}
+    Mapper(PROPERTIES) {}
 
 MapperBnnIV::~MapperBnnIV() {}
 

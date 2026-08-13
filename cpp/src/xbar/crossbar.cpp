@@ -166,7 +166,7 @@ int32_t Crossbar::mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
                                     update_p[i][j] = true;
                                     refresh_cell_counter_++;
                                 }
-                                if (mapper_->is_diff_weight_mapping()) {
+                                if (mapper_->uses_negative_matrix()) {
                                     if (curr_gd_m[i][j] == 1) {
                                         update_m[i][j] = true;
                                         refresh_cell_counter_++;

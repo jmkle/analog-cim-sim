@@ -17,7 +17,7 @@ MapperIntV::MapperIntV() :
     tmp_out_fp_(CFG.state_columns(), 0.0),
     res_fp_(CFG.state_columns(), 0.0),
     vd_slice_(CFG.capacity().n, 0),
-    Mapper(PROPERTIES, false) {
+    Mapper(PROPERTIES) {
     // Calculation of the delta factor
     delta_ = 0.0;
     if (CFG.m_mode == MappingMode::I_UINT_W_OFFS) {

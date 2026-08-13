@@ -16,7 +16,7 @@ MapperBnnVI::MapperBnnVI() :
     vd_p_(CFG.capacity().n, 0),
     vd_m_(CFG.capacity().n, 0),
     tmp_out_(CFG.capacity().m, 0.0),
-    Mapper(PROPERTIES, true) {}
+    Mapper(PROPERTIES) {}
 
 MapperBnnVI::~MapperBnnVI() {}
 

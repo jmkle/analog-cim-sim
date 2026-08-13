@@ -13,7 +13,7 @@ namespace nq {
 MapperBnnI::MapperBnnI() :
     vd_(CFG.capacity().n, 0),
     tmp_out_(CFG.capacity().m, 0.0),
-    Mapper(PROPERTIES, true) {}
+    Mapper(PROPERTIES) {}
 
 MapperBnnI::~MapperBnnI() {}
 

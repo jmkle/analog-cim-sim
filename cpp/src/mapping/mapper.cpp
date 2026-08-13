@@ -16,9 +16,8 @@
 
 namespace nq {
 
-Mapper::Mapper(const MappingProperties &props, bool is_diff_weight_mapping) :
+Mapper::Mapper(const MappingProperties &props) :
     props_(props),
-    is_diff_weight_mapping_(is_diff_weight_mapping),
     gd_p_(CFG.state_columns(), std::vector<int32_t>(CFG.capacity().n, 0)),
     gd_m_(CFG.state_columns(), std::vector<int32_t>(CFG.capacity().n, 0)),
     shift_(CFG.SPLIT.size(), 0),
@@ -290,8 +289,8 @@ void Mapper::rd_update_conductance(std::shared_ptr<const ReadDisturb> rd_model,
         }
     }
 
-    if (!is_diff_weight_mapping_) {
-        // No need to update ia_m_ for non-diff weight mapping
+    if (!uses_negative_matrix()) {
+        // No need to update ia_m_ if the mapping leaves it empty
         return;
     }
 
@@ -329,8 +328,8 @@ void Mapper::rd_update_conductance(
         }
     }
 
-    if (!is_diff_weight_mapping_) {
-        // No need to update ia_m_ for non-diff weight mapping
+    if (!uses_negative_matrix()) {
+        // No need to update ia_m_ if the mapping leaves it empty
         return;
     }
 
@@ -390,8 +389,8 @@ int Mapper::rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model) {
         }
     }
 
-    if (!is_diff_weight_mapping_) {
-        // No need to check ia_m_ for non-diff weight mapping
+    if (!uses_negative_matrix()) {
+        // No need to check ia_m_ if the mapping leaves it empty
         return refresh_count;
     }
 
@@ -418,7 +417,9 @@ int Mapper::rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model) {
 
 const MappingProperties &Mapper::properties() const { return props_; }
 
-bool Mapper::is_diff_weight_mapping() const { return is_diff_weight_mapping_; }
+bool Mapper::uses_negative_matrix() const {
+    return props_.uses_negative_matrix();
+}
 
 void Mapper::slice_vd(std::vector<int32_t> &vd, std::vector<int32_t> &vd_slice,
                       size_t n, size_t i_bit) {

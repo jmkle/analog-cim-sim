@@ -31,6 +31,15 @@ constexpr nq::MappingProperties geometry(uint32_t col_mult, uint32_t row_mult,
 
 } // namespace
 
+// The second matrix is what the extra cell of a pair holds, whether the two sit
+// side by side or on top of each other.
+TEST(MappingPropertiesTests, NegativeMatrixFollowsThePairedCell) {
+    EXPECT_FALSE(geometry(1, 1, false).uses_negative_matrix());
+    EXPECT_TRUE(geometry(2, 1, false).uses_negative_matrix());
+    EXPECT_TRUE(geometry(1, 2, false).uses_negative_matrix());
+    EXPECT_TRUE(geometry(2, 2, false).uses_negative_matrix());
+}
+
 // SPLIT only widens a weight if the mapping puts its segments in columns.
 TEST(MappingPropertiesTests, SplitWidensOnlyColumnSplitMappings) {
     EXPECT_EQ(geometry(1, 1, true).split_columns_per_weight(3), 3u);

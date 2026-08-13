@@ -24,7 +24,7 @@ class Mapper {
   public:
     // Properties are passed from the derived class to the base class
     // constructor, so that the base class can use them in its constructor.
-    Mapper(const MappingProperties &props, bool is_diff_weight_mapping);
+    explicit Mapper(const MappingProperties &props);
     Mapper(const Mapper &) = delete;
     virtual ~Mapper() = default;
 
@@ -52,7 +52,7 @@ class Mapper {
                                    const uint64_t write_num);
     int rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model);
     const MappingProperties &properties() const;
-    bool is_diff_weight_mapping() const;
+    bool uses_negative_matrix() const;
 
     void a_add_c2c_var(int32_t m_matrix, int32_t n_matrix);
     void a_remove_c2c_var(int32_t m_matrix, int32_t n_matrix);
@@ -73,7 +73,6 @@ class Mapper {
 
     // How the configured mapping places a weight and what it costs
     const MappingProperties &props_;
-    bool is_diff_weight_mapping_;
 
     // Helper functions
     void slice_vd(std::vector<int32_t> &vd, std::vector<int32_t> &vd_slice,

@@ -16,7 +16,7 @@ MapperIntII::MapperIntII() :
     tmp_out_int_(CFG.state_columns(), 0),
     tmp_out_fp_(CFG.state_columns(), 0.0),
     vd_slice_(CFG.capacity().n, 0),
-    Mapper(PROPERTIES, true) {}
+    Mapper(PROPERTIES) {}
 
 MapperIntII::~MapperIntII() {}
 

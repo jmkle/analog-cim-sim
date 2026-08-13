@@ -13,7 +13,7 @@ namespace nq {
 MapperTnnIII::MapperTnnIII() :
     vd_p_(CFG.capacity().n, 0),
     tmp_out_(CFG.capacity().m, 0.0),
-    Mapper(PROPERTIES, true) {}
+    Mapper(PROPERTIES) {}
 
 MapperTnnIII::~MapperTnnIII() {}
 

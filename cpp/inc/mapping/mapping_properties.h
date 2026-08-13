@@ -54,6 +54,13 @@ struct MappingProperties {
                         ADC */
     bool bit_serial; /**< Inputs applied bit by bit, so scaled by I_BIT */
 
+    /** Whether the mapping stores a second matrix in ia_m_. */
+    constexpr bool uses_negative_matrix() const {
+        // The second matrix is what the extra cell of a pair holds, whether the
+        // two sit side by side or on top of each other.
+        return (col_mult == 2) || (row_mult == 2);
+    }
+
     /** Columns a weight takes for its SPLIT segments, 1 if it does not split.
      */
     constexpr uint32_t split_columns_per_weight(size_t split_size) const {
