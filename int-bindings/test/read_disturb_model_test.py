@@ -11,6 +11,7 @@ import acs_py
 import os
 import sys
 
+from helper.native_output import suppressed_native_output
 from helper.rd_model import ReadDisturbGoldenModel
 
 repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
@@ -120,7 +121,10 @@ class TestReadDisturbModel(unittest.TestCase):
             mat[0] = -1
             acs_py.cpy(mat, m_matrix, n_matrix)
 
-        acs_py.mvm(res, vec, mat, m_matrix, n_matrix)
+        # Leaving the model range is the point of the test, so the warning the
+        # read belongs to is expected here.
+        with suppressed_native_output(stderr=True):
+            acs_py.mvm(res, vec, mat, m_matrix, n_matrix)
         assert acs_py.rd_run_out_of_bounds() == True
 
     def test_negative_matrix_is_disturbed(self):
