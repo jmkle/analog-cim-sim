@@ -42,6 +42,7 @@ TEST(AccountingTests, VerboseOutputForEveryMappingType) {
     run_accounting("digital/BNN_III.json");
     run_accounting("digital/BNN_IV.json");
     run_accounting("digital/BNN_V.json");
+    run_accounting("digital/BNN_VI.json");
     run_accounting("digital/TNN_I.json");
     run_accounting("digital/TNN_II.json");
     run_accounting("digital/TNN_III.json");
