@@ -43,9 +43,7 @@ template <typename T> std::unique_ptr<Mapper> make_mapper() {
     return std::make_unique<T>();
 }
 
-// One row per mode, in the order of the enumerators. MapperIntI serves the two
-// modes that differ only in how many crossbars they occupy, so it appears twice
-// with different properties.
+// One row per mode, in the order of the enums.
 constexpr RegistryEntry REGISTRY[] = {
     {&MapperIntI::PROPERTIES_1XB, &make_mapper<MapperIntI>},
     {&MapperIntI::PROPERTIES_2XB, &make_mapper<MapperIntI>},
@@ -81,8 +79,6 @@ constexpr bool registry_is_ordered() {
     }
     return true;
 }
-
-/** A row under the wrong mode fails the build here. */
 static_assert(registry_is_ordered(),
               "The mapping registry rows are not in MappingMode order");
 

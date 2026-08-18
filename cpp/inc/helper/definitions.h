@@ -33,7 +33,6 @@ enum class MappingMode {
     TNN_III,
     TNN_IV,
     TNN_V,
-    // Keep last. Bounds a loop over all modes.
     NUM_MODES
 };
 

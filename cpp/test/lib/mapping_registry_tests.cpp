@@ -14,8 +14,7 @@
 
 #include "mapping/mapping_registry.h"
 
-// Every mode has a row by construction, but the names are free text and have to
-// identify a mode on their own, since a config file selects by name.
+// Every mode has a unique name, and the name can be used to get back the mode.
 TEST(MappingRegistryTests, EveryModeHasAUniqueName) {
     const size_t num_modes = static_cast<size_t>(nq::MappingMode::NUM_MODES);
     for (size_t i = 0; i < num_modes; ++i) {
@@ -52,8 +51,6 @@ TEST(MappingRegistryTests, FactorsPerMode) {
         {nq::MappingMode::TNN_I, 1, 2, 2},
         {nq::MappingMode::TNN_II, 1, 2, 1},
         {nq::MappingMode::TNN_III, 1, 2, 1},
-        // Both bits share a row in the two planes, so SPLIT must not scale the
-        // column factor.
         {nq::MappingMode::TNN_IV, 2, 2, 1},
         {nq::MappingMode::TNN_V, 2, 2, 1},
     };

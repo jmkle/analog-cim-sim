@@ -13,20 +13,20 @@
 
 namespace {
 
-// Properties of no real mode, so the arithmetic is tested on its own. Only the
-// fields the geometry depends on are given a meaning here.
+// Testing properties: Only the fields the geometry depends on are given a
+// meaning here.
 constexpr nq::MappingProperties geometry(uint32_t col_mult, uint32_t row_mult,
                                          bool split_in_cols) {
-    return {/* mode */ nq::MappingMode::NUM_MODES,
-            /* name */ "GEOMETRY_ONLY",
-            /* type */ nq::MappingType::INT,
-            /* col_mult */ col_mult,
-            /* row_mult */ row_mult,
-            /* split_in_cols */ split_in_cols,
-            /* out_enc */ nq::OutputEnc::SINGLE,
-            /* xbars */ 1,
-            /* cycles */ 1,
-            /* bit_serial */ false};
+    return {nq::MappingMode::NUM_MODES,
+            "GEOMETRY_ONLY",
+            nq::MappingType::INT,
+            col_mult,
+            row_mult,
+            split_in_cols,
+            nq::OutputEnc::SINGLE,
+            1,
+            1,
+            false};
 }
 
 } // namespace

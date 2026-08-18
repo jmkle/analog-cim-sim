@@ -26,9 +26,6 @@ class TestConfigUpdate(unittest.TestCase):
             os.path.abspath(f"{repo_path}/cpp/test/lib/configs/analog/I_DIFF_W_DIFF_1XB.json"))
 
     def tearDown(self):
-        # The crossbar reports its counters when it is destroyed, which happens
-        # once a later test replaces it. Clear the flag so a test that turns it
-        # on does not report through an unrelated test.
         with suppressed_native_output(stdout=True):
             acs_py.update_config(json.dumps({"verbose": False}))
 

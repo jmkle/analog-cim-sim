@@ -17,33 +17,30 @@ namespace nq {
 // Mapping: I_DIFF_W_DIFF_1XB and I_DIFF_W_DIFF_2XB
 class MapperIntI : public Mapper {
   public:
-    // How each mapping places one weight on the crossbar and what it costs.
     static constexpr MappingProperties PROPERTIES_1XB = {
-        /* mode */ MappingMode::I_DIFF_W_DIFF_1XB,
-        /* name */ "I_DIFF_W_DIFF_1XB",
-        /* type */ MappingType::INT,
-        /* col_mult */ 2,
-        /* row_mult */ 1,
-        /* split_in_cols */ true,
-        /* out_enc */ OutputEnc::DIFF_COL,
-        /* xbars */ 1,
-        /* cycles */ 2,
-        /* bit_serial */ true};
+        MappingMode::I_DIFF_W_DIFF_1XB,
+        "I_DIFF_W_DIFF_1XB",
+        MappingType::INT,
+        2,
+        1,
+        true,
+        OutputEnc::DIFF_COL,
+        1,
+        2,
+        true};
 
     static constexpr MappingProperties PROPERTIES_2XB = {
-        /* mode */ MappingMode::I_DIFF_W_DIFF_2XB,
-        /* name */ "I_DIFF_W_DIFF_2XB",
-        /* type */ MappingType::INT,
-        /* col_mult */ 2,
-        /* row_mult */ 1,
-        /* split_in_cols */ true,
-        /* out_enc */ OutputEnc::DIFF_COL,
-        /* xbars */ 2,
-        /* cycles */ 1,
-        /* bit_serial */ true};
+        MappingMode::I_DIFF_W_DIFF_2XB,
+        "I_DIFF_W_DIFF_2XB",
+        MappingType::INT,
+        2,
+        1,
+        true,
+        OutputEnc::DIFF_COL,
+        2,
+        1,
+        true};
 
-    // The two modes differ only in how many crossbars they occupy, so one
-    // mapper serves both.
     static constexpr const MappingProperties &properties_of(MappingMode mode) {
         return (mode == MappingMode::I_DIFF_W_DIFF_2XB) ? PROPERTIES_2XB
                                                         : PROPERTIES_1XB;

@@ -17,18 +17,16 @@ namespace nq {
 // Mapping BNN VI: i_NN = v_D+ - v_D- w_NN = g_D+ - g_D-
 class MapperBnnVI : public Mapper {
   public:
-    // How this mapping places one weight on the crossbar and what it costs.
-    static constexpr MappingProperties PROPERTIES = {
-        /* mode */ MappingMode::BNN_VI,
-        /* name */ "BNN_VI",
-        /* type */ MappingType::BNN,
-        /* col_mult */ 2,
-        /* row_mult */ 2,
-        /* split_in_cols */ false,
-        /* out_enc */ OutputEnc::DIFF_COL,
-        /* xbars */ 1,
-        /* cycles */ 1,
-        /* bit_serial */ false};
+    static constexpr MappingProperties PROPERTIES = {MappingMode::BNN_VI,
+                                                     "BNN_VI",
+                                                     MappingType::BNN,
+                                                     2,
+                                                     2,
+                                                     false,
+                                                     OutputEnc::DIFF_COL,
+                                                     1,
+                                                     1,
+                                                     false};
 
     MapperBnnVI();
     MapperBnnVI(const MapperBnnVI &) = delete;

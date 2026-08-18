@@ -24,11 +24,8 @@ class Mapper;
  * Resolves a mode to the constant of the mapper that implements it, for the
  * code that has to know how a mapping behaves before a mapper exists.
  *
- * A new mode needs an enumerator in definitions.h, a PROPERTIES constant on its
- * mapper and a row in the table in mapping_registry.cpp. The table holds one
- * row per mode and a static_assert ties every row to the mode it describes, so
- * a missing or misplaced row fails the build and a half-added mode cannot reach
- * a config file.
+ * A new mode needs an enum in definitions.h, a PROPERTIES constant on its
+ * mapper and a row in the REGISTRY array in mapping_registry.cpp.
  */
 const MappingProperties &mapping_properties(MappingMode mode);
 

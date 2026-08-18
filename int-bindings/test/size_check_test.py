@@ -44,7 +44,6 @@ class TestSizeCheck(unittest.TestCase):
         vec = np.ones(n_matrix, dtype=np.int32)
         res = np.zeros(m_matrix, dtype=np.int32)
 
-        # Both calls report the rejection on stderr, which the test expects.
         with suppressed_native_output(stderr=True):
             self.assertEqual(acs_py.cpy(mat, m_matrix, n_matrix), -1)
             self.assertEqual(acs_py.mvm(res, vec, mat, m_matrix, n_matrix), -1)

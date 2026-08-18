@@ -17,18 +17,16 @@ namespace nq {
 // Mapping BNN V: XNOR mapping
 class MapperBnnV : public Mapper {
   public:
-    // How this mapping places one weight on the crossbar and what it costs.
-    static constexpr MappingProperties PROPERTIES = {
-        /* mode */ MappingMode::BNN_V,
-        /* name */ "BNN_V",
-        /* type */ MappingType::BNN,
-        /* col_mult */ 1,
-        /* row_mult */ 2,
-        /* split_in_cols */ false,
-        /* out_enc */ OutputEnc::SINGLE,
-        /* xbars */ 1,
-        /* cycles */ 1,
-        /* bit_serial */ false};
+    static constexpr MappingProperties PROPERTIES = {MappingMode::BNN_V,
+                                                     "BNN_V",
+                                                     MappingType::BNN,
+                                                     1,
+                                                     2,
+                                                     false,
+                                                     OutputEnc::SINGLE,
+                                                     1,
+                                                     1,
+                                                     false};
 
     MapperBnnV();
     MapperBnnV(const MapperBnnV &) = delete;

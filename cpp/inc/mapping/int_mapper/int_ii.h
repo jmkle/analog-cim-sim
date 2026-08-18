@@ -17,18 +17,16 @@ namespace nq {
 // Mapping: I_OFFS_W_DIFF
 class MapperIntII : public Mapper {
   public:
-    // How this mapping places one weight on the crossbar and what it costs.
-    static constexpr MappingProperties PROPERTIES = {
-        /* mode */ MappingMode::I_OFFS_W_DIFF,
-        /* name */ "I_OFFS_W_DIFF",
-        /* type */ MappingType::INT,
-        /* col_mult */ 2,
-        /* row_mult */ 1,
-        /* split_in_cols */ true,
-        /* out_enc */ OutputEnc::DIFF_COL,
-        /* xbars */ 1,
-        /* cycles */ 1,
-        /* bit_serial */ true};
+    static constexpr MappingProperties PROPERTIES = {MappingMode::I_OFFS_W_DIFF,
+                                                     "I_OFFS_W_DIFF",
+                                                     MappingType::INT,
+                                                     2,
+                                                     1,
+                                                     true,
+                                                     OutputEnc::DIFF_COL,
+                                                     1,
+                                                     1,
+                                                     true};
 
     MapperIntII();
     MapperIntII(const MapperIntII &) = delete;

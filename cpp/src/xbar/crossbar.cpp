@@ -230,7 +230,6 @@ Crossbar::~Crossbar() {
             mvm_counter_ * prop.xbars * bits_per_input_;
         const uint64_t num_mvm_sequential =
             mvm_counter_ * prop.cycles * bits_per_input_;
-        // Counted over every crossbar the mapping drives.
         const uint32_t cells_per_value =
             factors_.col * factors_.row * prop.xbars;
 

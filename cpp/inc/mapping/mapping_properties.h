@@ -33,13 +33,7 @@ struct XbarFactors {
     uint32_t row; /**< Cells along the row (N) direction */
 };
 
-/** How a mapping places one weight on the crossbar and what it costs.
- *
- * Every mapper declares the properties of the mode or modes it implements as a
- * constant next to its class, so the numbers sit with the code that produces
- * them. mapping_registry.h resolves a MappingMode to those constants for the
- * code that only has a mode at hand.
- */
+/** How a mapping places one weight on the crossbar and what it costs. */
 struct MappingProperties {
     MappingMode mode; /**< Mode these properties belong to */
     const char *name; /**< Mode name used in the config */
@@ -56,8 +50,6 @@ struct MappingProperties {
 
     /** Whether the mapping stores a second matrix in ia_m_. */
     constexpr bool uses_negative_matrix() const {
-        // The second matrix is what the extra cell of a pair holds, whether the
-        // two sit side by side or on top of each other.
         return (col_mult == 2) || (row_mult == 2);
     }
 
@@ -76,8 +68,6 @@ struct MappingProperties {
     constexpr XbarCapacity xbar_capacity(size_t split_size, uint32_t M,
                                          uint32_t N) const {
         const XbarFactors factors = xbar_factors(split_size);
-        // Integer division on purpose. A crossbar that cannot hold another full
-        // logical weight leaves the remaining cells unused.
         return {M / factors.col, N / factors.row};
     }
 };

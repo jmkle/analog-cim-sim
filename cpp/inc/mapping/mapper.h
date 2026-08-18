@@ -22,8 +22,6 @@ namespace nq {
 
 class Mapper {
   public:
-    // Properties are passed from the derived class to the base class
-    // constructor, so that the base class can use them in its constructor.
     explicit Mapper(const MappingProperties &props);
     Mapper(const Mapper &) = delete;
     virtual ~Mapper() = default;
@@ -71,7 +69,6 @@ class Mapper {
     void a_write_p(int32_t m_matrix, int32_t n_matrix);
     void a_write_p_bnn(int32_t m_matrix, int32_t n_matrix);
 
-    // How the configured mapping places a weight and what it costs
     const MappingProperties &props_;
 
     // Helper functions

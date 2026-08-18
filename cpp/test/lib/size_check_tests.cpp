@@ -62,8 +62,7 @@ TEST(SizeCheckTests, OffsetWeightsSplitColumns) {
     check_capacity(cfg, 4, 4, 5, 4);
 }
 
-// The two polarities sit in adjacent rows, so the rows run out first. This case
-// used to write past the end of the conductance matrix.
+// The two polarities sit in adjacent rows, so the rows run out first.
 TEST(SizeCheckTests, DiffWeightsDoubleRows) {
     std::string cfg = get_cfg_file("analog/BNN_V.json");
     set_config(cfg.c_str());
