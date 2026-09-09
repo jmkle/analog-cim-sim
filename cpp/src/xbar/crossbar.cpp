@@ -7,14 +7,13 @@
  ******************************************************************************/
 #include "xbar/crossbar.h"
 #include "helper/config.h"
-#include "mapping/mapping_registry.h"
 
 #include <iostream>
 
 namespace nq {
 
 Crossbar::Crossbar() :
-    mapper_(Mapper::create_from_config()),
+    mapper_(Mapper::create()),
     write_xbar_counter_(0),
     mvm_counter_(0),
     rd_model_(nullptr),
@@ -38,7 +37,7 @@ bool Crossbar::fits(int32_t m_matrix, int32_t n_matrix) const {
     const XbarFactors f = CFG.factors();
     std::cerr << "Error: A " << m_matrix << "x" << n_matrix
               << " matrix does not fit the crossbar. "
-              << m_mode_to_string(CFG.m_mode) << " needs " << f.col
+              << Mapper::name_from_mode(CFG.m_mode) << " needs " << f.col
               << " column(s) and " << f.row << " row(s) per weight, so it maps "
               << "to " << m_matrix * f.col << "x" << n_matrix * f.row
               << " cells on a " << CFG.M << "x" << CFG.N

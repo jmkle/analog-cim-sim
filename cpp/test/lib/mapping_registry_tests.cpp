@@ -6,23 +6,24 @@
  * found in the root directory of this source tree.                           *
  ******************************************************************************/
 
+#include "mapping/mapper.h"
 #include <cstddef>
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <optional>
 #include <vector>
 
-#include "mapping/mapping_registry.h"
-
 // Every mode has a unique name, and the name can be used to get back the mode.
 TEST(MappingRegistryTests, EveryModeHasAUniqueName) {
     const size_t num_modes = static_cast<size_t>(nq::MappingMode::NUM_MODES);
     for (size_t i = 0; i < num_modes; ++i) {
         const nq::MappingMode mode = static_cast<nq::MappingMode>(i);
-        EXPECT_EQ(nq::mode_from_name(nq::m_mode_to_string(mode)), mode);
+        EXPECT_EQ(nq::Mapper::mode_from_name(nq::Mapper::name_from_mode(mode)),
+                  mode);
     }
-    EXPECT_EQ(nq::mode_from_name("NOT_A_MAPPING"), std::nullopt);
-    EXPECT_EQ(nq::m_mode_to_string(nq::MappingMode::NUM_MODES), "Unknown mode");
+    EXPECT_EQ(nq::Mapper::mode_from_name("NOT_A_MAPPING"), std::nullopt);
+    EXPECT_EQ(nq::Mapper::name_from_mode(nq::MappingMode::NUM_MODES),
+              "Unknown mode");
 }
 
 // How many physical cells one logical weight occupies, per mapping mode.
@@ -59,10 +60,10 @@ TEST(MappingRegistryTests, FactorsPerMode) {
 
     for (const Expected &e : expected) {
         const nq::XbarFactors factors =
-            nq::mapping_properties(e.mode).xbar_factors(e.split_size);
+            nq::Mapper::properties(e.mode).xbar_factors(e.split_size);
         EXPECT_EQ(factors.col, e.col)
-            << "column factor of " << nq::m_mode_to_string(e.mode);
+            << "column factor of " << nq::Mapper::name_from_mode(e.mode);
         EXPECT_EQ(factors.row, e.row)
-            << "row factor of " << nq::m_mode_to_string(e.mode);
+            << "row factor of " << nq::Mapper::name_from_mode(e.mode);
     }
 }

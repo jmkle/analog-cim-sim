@@ -6,7 +6,7 @@
  * found in the root directory of this source tree.                           *
  ******************************************************************************/
 #include "helper/config.h"
-#include "mapping/mapping_registry.h"
+#include "mapping/mapper.h"
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -67,7 +67,7 @@ bool Config::apply_config() {
 
         std::string m_mode_name =
             getConfigValue<std::string>(cfg_data_, "m_mode");
-        std::optional<MappingMode> mode = mode_from_name(m_mode_name);
+        std::optional<MappingMode> mode = Mapper::mode_from_name(m_mode_name);
         if (!mode) {
             std::cerr << "Unkown MappingMode." << std::endl;
             std::exit(EXIT_FAILURE);
@@ -295,10 +295,11 @@ bool Config::apply_config() {
         // Needs the mapping and the split, so it cannot run earlier.
         const XbarFactors f = factors();
         if ((M < f.col) || (N < f.row)) {
-            std::cerr << "Crossbar too small for " << m_mode_to_string(m_mode)
-                      << ". One weight needs " << f.col << " column(s) and "
-                      << f.row << " row(s), but M=" << M << " and N=" << N
-                      << "." << std::endl;
+            std::cerr << "Crossbar too small for "
+                      << Mapper::name_from_mode(m_mode) << ". One weight needs "
+                      << f.col << " column(s) and " << f.row
+                      << " row(s), but M=" << M << " and N=" << N << "."
+                      << std::endl;
             std::exit(EXIT_FAILURE);
         }
 
@@ -312,28 +313,28 @@ bool Config::apply_config() {
 }
 
 XbarFactors Config::factors() const {
-    return mapping_properties(m_mode).xbar_factors(SPLIT.size());
+    return Mapper::properties(m_mode).xbar_factors(SPLIT.size());
 }
 
 XbarCapacity Config::capacity() const {
-    return mapping_properties(m_mode).xbar_capacity(SPLIT.size(), M, N);
+    return Mapper::properties(m_mode).xbar_capacity(SPLIT.size(), M, N);
 }
 
 uint32_t Config::state_columns() const {
     return capacity().m *
-           mapping_properties(m_mode).split_columns_per_weight(SPLIT.size());
+           Mapper::properties(m_mode).split_columns_per_weight(SPLIT.size());
 }
 
 bool Config::is_int_mapping(const MappingMode &mode) {
-    return mapping_properties(mode).type == MappingType::INT;
+    return Mapper::properties(mode).type == MappingType::INT;
 }
 
 bool Config::is_bnn_mapping(const MappingMode &mode) {
-    return mapping_properties(mode).type == MappingType::BNN;
+    return Mapper::properties(mode).type == MappingType::BNN;
 }
 
 bool Config::is_tnn_mapping(const MappingMode &mode) {
-    return mapping_properties(mode).type == MappingType::TNN;
+    return Mapper::properties(mode).type == MappingType::TNN;
 }
 
 bool Config::update_cfg(const char *json_string, bool *recreate_xbar,

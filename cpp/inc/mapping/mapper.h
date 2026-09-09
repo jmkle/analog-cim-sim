@@ -26,6 +26,8 @@ class Mapper {
     Mapper(const Mapper &) = delete;
     virtual ~Mapper() = default;
 
+    static std::unique_ptr<Mapper> create();
+
     virtual void d_write(const int32_t *mat, int32_t m_matrix,
                          int32_t n_matrix) = 0;
     virtual void a_write(int32_t m_matrix, int32_t n_matrix) = 0;
@@ -34,11 +36,12 @@ class Mapper {
     virtual void a_mvm(int32_t *res, const int32_t *vec, const int32_t *mat,
                        int32_t m_matrix, int32_t n_matrix,
                        const char *l_name) = 0;
-    static std::unique_ptr<Mapper> create_from_config();
+
     const std::vector<std::vector<int32_t>> &get_gd_p() const;
     const std::vector<std::vector<int32_t>> &get_gd_m() const;
     const std::vector<std::vector<float>> &get_ia_p() const;
     const std::vector<std::vector<float>> &get_ia_m() const;
+
     void rd_update_conductance(std::shared_ptr<const ReadDisturb> rd_model,
                                const uint64_t read_num);
     void rd_update_conductance(
@@ -49,11 +52,16 @@ class Mapper {
                                    const uint64_t read_num,
                                    const uint64_t write_num);
     int rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model);
-    const MappingProperties &properties() const;
-    bool uses_negative_matrix() const;
 
     void a_add_c2c_var(int32_t m_matrix, int32_t n_matrix);
     void a_remove_c2c_var(int32_t m_matrix, int32_t n_matrix);
+
+    const MappingProperties &properties() const;
+    bool uses_negative_matrix() const;
+
+    static const MappingProperties &properties(MappingMode mode);
+    static std::optional<MappingMode> mode_from_name(const std::string &name);
+    static std::string name_from_mode(MappingMode mode);
 
   protected:
     void d_write_diff(const int32_t *mat, int32_t m_matrix, int32_t n_matrix);

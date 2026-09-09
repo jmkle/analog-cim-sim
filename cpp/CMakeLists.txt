@@ -64,7 +64,6 @@ set(ACS_CORE_SRC
   src/helper/config.cpp
   src/helper/histogram.cpp
   src/mapping/mapper.cpp
-  src/mapping/mapping_registry.cpp
   src/mapping/int_mapper/int_i.cpp
   src/mapping/int_mapper/int_ii.cpp
   src/mapping/int_mapper/int_iii.cpp

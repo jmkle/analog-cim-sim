@@ -7,7 +7,7 @@
  ******************************************************************************/
 #include "xbar/read_disturb.h"
 #include "helper/config.h"
-#include "mapping/mapping_registry.h"
+#include "mapping/mapper.h"
 
 #include <iostream>
 
@@ -111,7 +111,7 @@ void ReadDisturb::update_cycle_m(int m, int n, uint64_t cycles) {
 }
 
 void ReadDisturb::update_consecutive_reads(int32_t m_matrix, int32_t n_matrix) {
-    const MappingProperties &props = mapping_properties(CFG.m_mode);
+    const MappingProperties &props = Mapper::properties(CFG.m_mode);
     const size_t cols_per_weight =
         props.split_columns_per_weight(CFG.SPLIT.size());
     for (size_t m = 0; m < m_matrix * cols_per_weight; ++m) {

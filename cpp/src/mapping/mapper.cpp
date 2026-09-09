@@ -7,14 +7,108 @@
  ******************************************************************************/
 #include "mapping/mapper.h"
 #include "helper/config.h"
-#include "mapping/mapping_properties.h"
-#include "mapping/mapping_registry.h"
+#include "mapping/bnn_mapper/bnn_i.h"
+#include "mapping/bnn_mapper/bnn_ii.h"
+#include "mapping/bnn_mapper/bnn_iii.h"
+#include "mapping/bnn_mapper/bnn_iv.h"
+#include "mapping/bnn_mapper/bnn_v.h"
+#include "mapping/bnn_mapper/bnn_vi.h"
+#include "mapping/int_mapper/int_i.h"
+#include "mapping/int_mapper/int_ii.h"
+#include "mapping/int_mapper/int_iii.h"
+#include "mapping/int_mapper/int_iv.h"
+#include "mapping/int_mapper/int_v.h"
+#include "mapping/tnn_mapper/tnn_i.h"
+#include "mapping/tnn_mapper/tnn_ii.h"
+#include "mapping/tnn_mapper/tnn_iii.h"
+#include "mapping/tnn_mapper/tnn_iv.h"
+#include "mapping/tnn_mapper/tnn_v.h"
 
 #include <algorithm>
 #include <execution>
 #include <iostream>
+#include <map>
 
 namespace nq {
+
+struct MapperRegistry {
+    MapperRegistry() = delete;
+
+    /** Everything the registry knows about one mapping mode. */
+    struct MapperRegistryEntry {
+        const MappingProperties *props; /**< How the mapping places a weight */
+        std::unique_ptr<Mapper> (
+            *create)(); /**< Builds the mapper of that mode */
+    };
+
+    template <typename T> static std::unique_ptr<Mapper> make_mapper() {
+        return std::make_unique<T>();
+    }
+
+    // One row per mode, in the order of the enums.
+    static constexpr MapperRegistryEntry _registry[] = {
+        {&MapperIntI::PROPERTIES_1XB, &make_mapper<MapperIntI>},
+        {&MapperIntI::PROPERTIES_2XB, &make_mapper<MapperIntI>},
+        {&MapperIntII::PROPERTIES, &make_mapper<MapperIntII>},
+        {&MapperIntIII::PROPERTIES, &make_mapper<MapperIntIII>},
+        {&MapperIntIV::PROPERTIES, &make_mapper<MapperIntIV>},
+        {&MapperIntV::PROPERTIES, &make_mapper<MapperIntV>},
+        {&MapperBnnI::PROPERTIES, &make_mapper<MapperBnnI>},
+        {&MapperBnnII::PROPERTIES, &make_mapper<MapperBnnII>},
+        {&MapperBnnIII::PROPERTIES, &make_mapper<MapperBnnIII>},
+        {&MapperBnnIV::PROPERTIES, &make_mapper<MapperBnnIV>},
+        {&MapperBnnV::PROPERTIES, &make_mapper<MapperBnnV>},
+        {&MapperBnnVI::PROPERTIES, &make_mapper<MapperBnnVI>},
+        {&MapperTnnI::PROPERTIES, &make_mapper<MapperTnnI>},
+        {&MapperTnnII::PROPERTIES, &make_mapper<MapperTnnII>},
+        {&MapperTnnIII::PROPERTIES, &make_mapper<MapperTnnIII>},
+        {&MapperTnnIV::PROPERTIES, &make_mapper<MapperTnnIV>},
+        {&MapperTnnV::PROPERTIES, &make_mapper<MapperTnnV>},
+    };
+
+    /** Whether every row sits at the index of the mode it describes. */
+    static constexpr bool registry_is_ordered() {
+        for (size_t i = 0; i < std::size(_registry); ++i) {
+            if (_registry[i].props->mode != static_cast<MappingMode>(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Row of a mode, aborts on NUM_MODES and on anything cast in from outside
+     * the enum. */
+    static const MapperRegistryEntry &entry_of(MappingMode mode,
+                                               const char *what) {
+        const size_t index = static_cast<size_t>(mode);
+        if (index >= std::size(_registry)) {
+            std::cerr << "No " << what << " for mapping mode " << index << "."
+                      << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+        return _registry[index];
+    }
+
+    static std::optional<MappingMode> mode_from_name(const std::string &name) {
+        for (const MapperRegistryEntry &entry : _registry) {
+            if (name == entry.props->name) {
+                return entry.props->mode;
+            }
+        }
+        return {};
+    }
+
+    static std::string name_from_mode(MappingMode mode) {
+        const size_t index = static_cast<size_t>(mode);
+        if (index >= std::size(_registry)) {
+            return "Unknown mode";
+        }
+        return _registry[index].props->name;
+    }
+};
+
+static_assert(MapperRegistry::registry_is_ordered(),
+              "The mapping registry rows are not in MappingMode order");
 
 Mapper::Mapper(const MappingProperties &props) :
     props_(props),
@@ -64,8 +158,26 @@ Mapper::Mapper(const MappingProperties &props) :
     }
 }
 
-std::unique_ptr<Mapper> Mapper::create_from_config() {
-    return create_mapper(CFG.m_mode);
+std::unique_ptr<Mapper> Mapper::create() {
+    return MapperRegistry::entry_of(CFG.m_mode, "mapper").create();
+}
+
+const MappingProperties &Mapper::properties() const { return props_; }
+
+bool Mapper::uses_negative_matrix() const {
+    return props_.uses_negative_matrix();
+}
+
+const MappingProperties &Mapper::properties(MappingMode mode) {
+    return *MapperRegistry::entry_of(mode, "properties").props;
+}
+
+std::optional<MappingMode> Mapper::mode_from_name(const std::string &name) {
+    return MapperRegistry::mode_from_name(name);
+}
+
+std::string Mapper::name_from_mode(MappingMode mode) {
+    return MapperRegistry::name_from_mode(mode);
 }
 
 void Mapper::d_write_diff(const int32_t *mat, int32_t m_matrix,
@@ -413,12 +525,6 @@ int Mapper::rd_cell_based_refresh(std::shared_ptr<ReadDisturb> rd_model) {
         }
     }
     return refresh_count;
-}
-
-const MappingProperties &Mapper::properties() const { return props_; }
-
-bool Mapper::uses_negative_matrix() const {
-    return props_.uses_negative_matrix();
 }
 
 void Mapper::slice_vd(std::vector<int32_t> &vd, std::vector<int32_t> &vd_slice,
